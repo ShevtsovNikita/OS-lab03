@@ -15,6 +15,7 @@
 #define HIGH 1
 
 //***************************//
+#define BUTTON0 22
 #define LEDR 24
 #define LEDY 10
 #define LEDG 9
@@ -115,6 +116,7 @@ void Exiting(int parameter)
         GPIOUnexport(LEDR);
         GPIOUnexport(LEDY);
         GPIOUnexport(LEDG);
+        GPIOUnexport(BUTTON0);
         exit(parameter);
 }
 
@@ -123,8 +125,10 @@ void Exiting_sig()
         GPIOUnexport(LEDR);
         GPIOUnexport(LEDY);
         GPIOUnexport(LEDG);
+        GPIOUnexport(BUTTON0);
         exit(0);
 }
+
 
 void help()
 {
@@ -157,7 +161,7 @@ int main(int argc, char *argv[])
 
         if (!quiet)
                 printf("\nThe led blinker application was started\n\n");
-        int argument = 1;
+         int argument = 1, button = 0;
         if (quiet)
                 argument++;
         double delay = atof(argv[argument]) * 1000000;
@@ -165,32 +169,52 @@ int main(int argc, char *argv[])
         GPIOExport(LEDR);
         GPIOExport(LEDY);
         GPIOExport(LEDG);
+        GPIOExport(BUTTON0);
+        GPIODirection(BUTTON0, IN);
         GPIODirection(LEDR, OUT);
         GPIODirection(LEDY, OUT);
         GPIODirection(LEDG, OUT);
+        GPIORead(BUTTON0, button);
+
+        int state = 0;
+        while(1){
+        if(button == 1)
+                state = state + 1;
+        else{
+                usleep(delay);
+                state = state + 1;
+                }
+        }
 
         sleep(0.5);
-        while (1) {
+         while (1){
+                if(state%3 == 0){
                 GPIOWrite(LEDR, 1);
                 GPIOWrite(LEDY, 0);
                 GPIOWrite(LEDG, 0);
                 printf("Light:R\n");
                 fflush(stdout);
-                usleep(delay);
+                wait(delay + 1);
+                };
+                if(state%3 == 1){
                 GPIOWrite(LEDR, 0);
                 GPIOWrite(LEDY, 1);
                 GPIOWrite(LEDG, 0);
                 printf("Light:Y\n");
                 fflush(stdout);
-                usleep(delay);
+                wait(delay + 1);
+                };
+                if(state%3 == 2){
                 GPIOWrite(LEDR, 0);
                 GPIOWrite(LEDY, 0);
                 GPIOWrite(LEDG, 1);
                 printf("Light:G\n");
                 fflush(stdout);
-                usleep(delay);
+                wait(delay + 1);
+                };
         }
         return 0;
+
 }
 
 
