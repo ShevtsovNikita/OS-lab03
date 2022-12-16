@@ -47,6 +47,13 @@ int main(int argc, char *argv[])
                         quiet = 1;
                 }
         }
+        // Create I2C bus
+        int file;
+        char *bus = "/dev/i2c-1";
+        if ((file = open(bus, O_RDWR)) < 0) {
+                printf("Failed to open the bus. \n");
+                exit(1);
+        }
         // Get I2C device, TCS34725 I2C address is 0x29(41)
         ioctl(file, I2C_SLAVE, 0x29);
         // Select enable register(0x80)
@@ -72,7 +79,7 @@ int main(int argc, char *argv[])
         write(file, config, 2);
         sleep(1);
         // Read 8 bytes of data from register(0x94)
-        // cData lsb, cData msb, red lsb, red msb, green lsb, green msb, blue l>
+        // cData lsb, cData msb, red lsb, red msb, green lsb, green msb, blue lsb, blue msb
 
         while (1) {
         timeinfo();
@@ -108,17 +115,12 @@ int main(int argc, char *argv[])
                 int fd = open(argv[1], O_WRONLY);
 
                 printf("%d", fd);
-                //char cr[80];
-
-                //scanf("ffv", cr);
                 fflush(stdin);
-                //printf("Char is %s\n", cr);
-
-                //char cr[80] = (char)red;
-                write(fd, &red, 10);
+                char cr[12];
+                sprintf(cr, "%d,%d,%d", red,green,blue);                                                       //переводим значение R, G, B в строку
+                write(fd, cr, 12);                                                                             //записываем полученное значение в fifo
                 fflush(stdout);
                 close(fd);
-
 
                                 break;
                         } else {
@@ -129,4 +131,3 @@ int main(int argc, char *argv[])
                 }
         }
 }
-
