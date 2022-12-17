@@ -11,7 +11,7 @@
 void read_light(char color)
 {
         int fd = fopen("/home/pi/IVT33_Shevtsov_Nikita/light", "r");
-        fscanf(fd, &color);
+        read(fd, &color);
         fclose(fd);
 }
 
@@ -19,7 +19,8 @@ void detected_light(int red, int green, int blue)
 {
         char str[20];
         int fd = fopen("/home/pi/IVT33_Shevtsov_Nikita/color_data", "r");
-        fcanf("%d %d %d", &red, &green, &blue);
+        read(fd, "%d %d %d", &red, &green, &blue);
+        fclose(fd);
 }
 
 void main()
