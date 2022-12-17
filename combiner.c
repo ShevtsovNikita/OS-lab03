@@ -1,58 +1,42 @@
 #include <stdio.h>
-#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
-void read_light(char color)
+int main(int argc, char *argv[])
 {
-        int fd = fopen("/home/pi/IVT33_Shevtsov_Nikita/light", "r");
-        read(fd, &color);
-        fclose(fd);
+int delay_micros;
+//int red, green, blue;
+char color[1];
+char color_read[13];                             //буфер для чтения из color_sense
+
+delay_micros = argc * 1000000;
+
+while (1) {
+        int fd = open(argv[1], O_RDONLY);
+        printf("%d", fd);
+        read(fd, color_read, 13);
+        close(fd);
+        printf("from color_sense: ");
+        puts(color_read);
+        printf("\n");
+        fflush(stdin);
+        fflush(stdout);
+        int fdd = open(argv[2], O_RDONLY);
+        printf("%d", fd);
+        read(fdd, color, 1);
+        close(fdd);
+        printf("from led_blinker: %s\n", color);
+        fflush(stdin);
+        fflush(stdout);                                  //?
+
+        usleep(delay_micros);
+        }
+return 0;
 }
-
-void detected_light(int red, int green, int blue)
-{
-        char str[20];
-        int fd = fopen("/home/pi/IVT33_Shevtsov_Nikita/color_data", "r");
-        read(fd, "%d %d %d", &red, &green, &blue);
-        fclose(fd);
-}
-
-void main()
-{
-        char real;
-        int red, grin, blue;
-        while(1)
-        {
-        read_light(real);
-        detected_light(red, green, blue);
-
-        if(red > green & red > blue && real == "R"){
-                printf("Red");
-                fflush(stdout);
-        }
-        else
-        if(green > red && green > blue && real == "G"){
-                printf("Green");
-                fflush(stdout);
-        }
-        else
-        if(blue > red && blue > green && real == "B"){
-                printf("Blue");
-                fflush(stdout);
-        }
-
-        else{
-                printf("Wrong detection");
-                fflush(stdout);
-        }
-        usleep(100);
-}
-
 
 
