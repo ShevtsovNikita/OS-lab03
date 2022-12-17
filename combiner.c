@@ -9,34 +9,37 @@
 
 int main(int argc, char *argv[])
 {
-int delay_micros;
+
 //int red, green, blue;
 char color[1];
-char color_read[13];                             //буфер для чтения из color_sense
-
-delay_micros = argc * 1000000;
+char color_read[14];                             //буфер для чтения из color_sense
+int i = 1;
+int fd = open(argv[1], O_RDONLY);
+int fdd = open(argv[2], O_RDONLY);
 
 while (1) {
-        int fd = open(argv[1], O_RDONLY);
-        printf("%d", fd);
-        read(fd, color_read, 13);
-        close(fd);
+        if(i%2 == 1)
+        printf("%d)\n", i/2 + 1);
+        read(fd, color_read, 14);
+        if(i%2 == 1){
         printf("from color_sense: ");
         puts(color_read);
-        printf("\n");
+        color_read[0] = '\0';
         fflush(stdin);
         fflush(stdout);
-        int fdd = open(argv[2], O_RDONLY);
-        printf("%d", fd);
+        //printf("%d", fd);
+        }
         read(fdd, color, 1);
-        close(fdd);
-        printf("from led_blinker: %s\n", color);
+        if(i%2 == 1){
+        printf("from led_blinker: ");
+        puts(color);
+        printf("\n");
+        //color[0] = '\0';
         fflush(stdin);
-        fflush(stdout);                                  //?
-
-        usleep(delay_micros);
+        fflush(stdout);
+        }
+        i = i + 1;
+        usleep(1000000);
         }
 return 0;
 }
-
-
